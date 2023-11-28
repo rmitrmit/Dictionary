@@ -28,8 +28,26 @@
                 <button id="search-btn">Search</button>
             </div>
             <div class="result" id="result"></div>
+            
+            <!-- Bookmarks Section -->
+            <div class="bookmarks">
+                <h2>Your Bookmarks</h2>
+                <ul id="bookmarks-list"></ul>
+            </div>
         </div>
         <!-- Script -->
         <script src="script.js"></script>
+        <!-- Inside your HTML file -->
+        <script>
+            if ('serviceWorker' in navigator) {
+              navigator.serviceWorker.register('/service-worker.js')
+                .then(registration => {
+                  console.log('Service Worker registered with scope:', registration.scope);
+                })
+                .catch(error => {
+                  console.error('Service Worker registration failed:', error);
+                });
+            }
+        </script>
     </body>
 </html>

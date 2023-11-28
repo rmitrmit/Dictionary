@@ -1,3 +1,4 @@
+
 // fetching the definition by API
 const url = "https://api.dictionaryapi.dev/api/v2/entries/en/";
 const result = document.getElementById("result");
@@ -8,6 +9,7 @@ const btn = document.getElementById("search-btn");
 btn.addEventListener("click", () => {
     let inpWord = document.getElementById("inp-word").value;
     sound.src = ""; sound.load();
+    if (navigator.onLine) {
     fetch(`${url}${inpWord}`)
         .then(response => response.json())
         .then(data => {
@@ -31,6 +33,9 @@ btn.addEventListener("click", () => {
                     <button onclick="playSound()">
                         <i class="fas fa-volume-up"></i>
                     </button>
+                    <button class="bookmark-btn" onclick="handleBookmarkClick('${inpWord}', '${wordData.meanings[0].partOfSpeech}')">
+    Bookmark
+</button>
                 </div>
                 <div class="details">
                     <p>${wordData.meanings[0].partOfSpeech}</p>
@@ -67,6 +72,7 @@ if (audioEntry && audioEntry.audio) {
         .catch(() => {
             result.innerHTML = `<h3 class="error">Couldn't Find The Word</h3>`;
         });
+    };
 });
 
 // This plays sound but if we dont have the audio, print h3
@@ -78,3 +84,50 @@ function playSound() {
     } else {
         console.log("Setting audio source to:", audioUrl);if (audioUrl && audioUrl !== "") {    sound.setAttribute("src", audioUrl);    console.log("Audio source set. Attempting to play...");} else {    console.log("No valid audio URL provided.");}
 }};
+// Add this code to your existing JavaScript file
+
+// Function to get bookmarks from local storage
+function getBookmarks() {
+    const bookmarksString = localStorage.getItem('bookmarks');
+    return bookmarksString ? JSON.parse(bookmarksString) : [];
+}
+
+// ... (your existing code)
+
+// Function to store a bookmark in local storage
+function storeBookmark(bookmark) {
+    const bookmarks = getBookmarks();
+    bookmarks.push(bookmark);
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+}
+
+// Function to display bookmarks
+function displayBookmarks(bookmarks) {
+    const bookmarksList = document.getElementById('bookmarks-list');
+    bookmarksList.innerHTML = '';
+
+    bookmarks.forEach(bookmark => {
+        const listItem = document.createElement('li');
+        listItem.textContent = `${bookmark.word} (${bookmark.partOfSpeech})`;
+        bookmarksList.appendChild(listItem);
+    });
+}
+
+// Function to handle the bookmark button click
+function handleBookmarkClick(word, partOfSpeech) {
+    const bookmark = {
+        word,
+        partOfSpeech,
+        // Add other relevant data
+    };
+
+    // Store the bookmark
+    storeBookmark(bookmark);
+
+    // Optional: Provide feedback to the user
+    alert('Word bookmarked!');
+
+    // Display bookmarks
+    displayBookmarks(getBookmarks());
+}
+displayBookmarks(getBookmarks());
